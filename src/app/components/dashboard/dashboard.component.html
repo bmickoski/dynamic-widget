@@ -116,8 +116,7 @@
   <div class="flex flex-wrap mt-10">
     <ng-container #widgetContainer></ng-container>
     <ng-template #widgetContent>
-      <!-- Dynamically add corresponding component in ng-template -->
-      <app-weather></app-weather>
+      <ng-template *ngComponentOutlet="widgetComponent"></ng-template>
     </ng-template>
   </div>
 </div>

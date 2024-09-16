@@ -15,7 +15,9 @@ import { AddWidgetModalComponent } from './add-widget-modal/add-widget-modal.com
 import { Widget } from '../../models/widget.model';
 import { WeatherComponent } from './widgets/weather/weather.component';
 import { WidgetType } from './widgets/widget-type-enum';
-import { NgTemplateOutlet } from '@angular/common';
+import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
+
+type DynamicComponent = typeof WeatherComponent;
 
 @Component({
   selector: 'app-dashboard',
@@ -25,6 +27,7 @@ import { NgTemplateOutlet } from '@angular/common';
     AddWidgetModalComponent,
     WeatherComponent,
     NgTemplateOutlet,
+    NgComponentOutlet,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -35,13 +38,11 @@ export class DashboardComponent<T> {
   widgetIndex: number = 0;
   showAddModal: boolean = false;
   content = viewChild<TemplateRef<WeatherComponent>>('widgetContent');
+  widgetComponent!: DynamicComponent;
 
   createWidget(widget: Widget): void {
     this.showAddModal = false;
-    // const test = this.content()?.createEmbeddedView(
-    //   this.getWidgetComponent(widget.widget)
-    // );
-    // Here somehow to set desired widget component
+    this.widgetComponent = this.getWidgetComponent(widget.widget);
     const contentView = this.vcr()?.createEmbeddedView(this.content()!);
 
     if (contentView) {
@@ -52,6 +53,7 @@ export class DashboardComponent<T> {
       componentRef?.setInput('description', widget.description);
       componentRef?.setInput('index', ++this.widgetIndex);
       this.componentsRefs.push(componentRef as ComponentRef<WidgetComponent>);
+
       componentRef?.instance.remove.subscribe((index) =>
         this.removeWidget(index)
       );
@@ -78,12 +80,16 @@ export class DashboardComponent<T> {
     this.widgetIndex = 0;
   }
 
-  getWidgetComponent(widget: WidgetType): any {
+  getWidgetComponent(widget: WidgetType): DynamicComponent {
+    let cmp!: DynamicComponent;
     switch (widget) {
       case WidgetType.Weather:
-        return WeatherComponent;
+        cmp = WeatherComponent;
+        break;
       default:
         break;
     }
+
+    return cmp;
   }
 }
