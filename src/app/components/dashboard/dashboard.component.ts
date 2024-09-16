@@ -38,9 +38,10 @@ export class DashboardComponent<T> {
 
   createWidget(widget: Widget): void {
     this.showAddModal = false;
-    const test = this.content()?.createEmbeddedView(
-      this.getWidgetComponent(widget.widget)
-    );
+    // const test = this.content()?.createEmbeddedView(
+    //   this.getWidgetComponent(widget.widget)
+    // );
+    // Here somehow to set desired widget component
     const contentView = this.vcr()?.createEmbeddedView(this.content()!);
 
     if (contentView) {
