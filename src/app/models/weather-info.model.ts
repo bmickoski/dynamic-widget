@@ -16,9 +16,9 @@ export interface WeatherInfo {
     sea_level: number;
   };
   name: string;
-  sys: { country: string; sunrise: 1603673445; sunset: 1603714855 };
-  timezone: 19800;
-  visibility: 10000;
+  sys: { country: string; sunrise: number; sunset: number };
+  timezone: number;
+  visibility: number;
   weather: {
     description: string;
     icon: string;
