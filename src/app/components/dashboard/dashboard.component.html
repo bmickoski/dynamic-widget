@@ -118,5 +118,11 @@
     <ng-template #widgetContent>
       <ng-template *ngComponentOutlet="widgetComponent"></ng-template>
     </ng-template>
+    @if(widgets.length<=0) { @for (widget of widgets; track $index) {
+    <ng-container #widgetContainer></ng-container>
+    <ng-template #widgetContent>
+      <ng-template *ngComponentOutlet="widgetComponent"></ng-template>
+    </ng-template>
+    } }
   </div>
 </div>

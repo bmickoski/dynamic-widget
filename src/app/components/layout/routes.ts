@@ -14,6 +14,11 @@ export const routes: Routes = [
             (mod) => mod.DashboardComponent
           ),
       },
+      {
+        path: 'admin',
+        loadComponent: () =>
+          import('../admin/admin.component').then((mod) => mod.AdminComponent),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

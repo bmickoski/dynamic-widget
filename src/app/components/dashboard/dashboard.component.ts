@@ -4,6 +4,7 @@ import {
   contentChild,
   ElementRef,
   inject,
+  OnInit,
   TemplateRef,
   Type,
   viewChild,
@@ -16,6 +17,7 @@ import { Widget } from '../../models/widget.model';
 import { WeatherComponent } from './widgets/weather/weather.component';
 import { WidgetType } from './widgets/widget-type-enum';
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
+import { WidgetStore } from './widget/widget.store';
 
 type DynamicComponent = typeof WeatherComponent;
 
@@ -32,14 +34,21 @@ type DynamicComponent = typeof WeatherComponent;
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
-export class DashboardComponent<T> {
+export class DashboardComponent implements OnInit {
+  widgetStore = inject(WidgetStore);
+  // widgets = this.widgetStore.widgets();
+  widgets = this.widgetStore.widgets();
   vcr = viewChild('widgetContainer', { read: ViewContainerRef });
   componentsRefs = Array<ComponentRef<WidgetComponent>>();
   widgetIndex: number = 0;
   showAddModal: boolean = false;
   content = viewChild<TemplateRef<WeatherComponent>>('widgetContent');
   widgetComponent!: DynamicComponent;
+  wdgComponent = WidgetComponent;
 
+  ngOnInit(): void {
+    this.widgets.forEach((widget) => this.createWidget(widget));
+  }
   createWidget(widget: Widget): void {
     this.showAddModal = false;
     this.widgetComponent = this.getWidgetComponent(widget.widget);
@@ -54,6 +63,7 @@ export class DashboardComponent<T> {
       componentRef?.setInput('index', ++this.widgetIndex);
       this.componentsRefs.push(componentRef as ComponentRef<WidgetComponent>);
 
+      this.widgetStore.updateWidgets({ ...widget, index: ++this.widgetIndex });
       componentRef?.instance.remove.subscribe((index) =>
         this.removeWidget(index)
       );
@@ -78,6 +88,7 @@ export class DashboardComponent<T> {
   removeAllWidgets(): void {
     this.vcr()?.clear();
     this.widgetIndex = 0;
+    this.widgetStore.removeWidgets();
   }
 
   getWidgetComponent(widget: WidgetType): DynamicComponent {
